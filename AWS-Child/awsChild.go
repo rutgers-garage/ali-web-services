@@ -7,17 +7,20 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
 )
 
+func main() {
+	startService("https://hemangandhi.github.io")
+}
+
 func startService(container string) {
-	prg := "docker"
-	arg1 := "--version"
+	prg := "open"
+	//arg1 := "pns"
 	// declare variable for port flag
 	// declare variable for port fowarding
 
-	cmd := exec.Command(prg, arg1) // add port flag + value
+	cmd := exec.Command(prg, container) // add port flag + value
 	stdout, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
@@ -25,17 +28,4 @@ func startService(container string) {
 
 	fmt.Print(string(stdout))
 
-}
-
-func modifyNginx(port int) {
-	f, err := os.OpenFile("nginx.conf", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	defer f.Close()
-	if _, err := f.WriteString("penis penis penis\n"); err != nil {
-		log.Println(err)
-	}
 }

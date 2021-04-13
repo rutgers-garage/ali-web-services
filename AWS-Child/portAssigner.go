@@ -34,13 +34,10 @@ type AWSAppEntry struct {
 	Desc         string
 	Src          string
 	Account      string
+	Line         int
 }
 
-func main() {
-	checkPort()
-}
-
-func addPort(alias string, tag string, added string, mod string, desc string, src string, acc string) int {
+func addPort(alias string, tag string, added string, mod string, desc string, src string, acc string, line int) int {
 	// create struct
 	test := AWSAppEntry{
 		Alias:        alias,
@@ -50,6 +47,7 @@ func addPort(alias string, tag string, added string, mod string, desc string, sr
 		Desc:         desc,
 		Src:          src,
 		Account:      acc,
+		Line:         line,
 	}
 
 	// read in json

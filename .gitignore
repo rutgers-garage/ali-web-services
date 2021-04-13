@@ -1,24 +1,2 @@
 docker-test/
 .vscode/
-
-#dependencies
-aws-dashboard/node_modules
-aws-dashboard/.pnp
-aws-dashboard/.pnp.js
-
-# testing
-aws-dashboard/coverage
-
-# production
-aws-dashboard/build
-
-# misc
-aws-dashboard/.DS_Store
-aws-dashboard/.env.local
-aws-dashboard/.env.development.local
-aws-dashboard/.env.test.local
-aws-dashboard/.env.production.local
-
-aws-dashboard/npm-debug.log*
-aws-dashboard/yarn-debug.log*
-aws-dashboard/yarn-error.log*
