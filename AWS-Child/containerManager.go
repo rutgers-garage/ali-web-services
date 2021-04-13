@@ -11,12 +11,12 @@ import (
 )
 
 func startService(container string) {
-	prg := "open"
-	//arg1 := "pns"
-	// declare variable for port flag
-	// declare variable for port fowarding
+	docker := "docker"
+	run := "run"
+	p := "-p"
+	args := fmt.Sprintf("%d:%d", 3000, 3000) // FIRST NUMBER SHOULD BE portAssigner.checkPort() SECOND NUMBER SHOULD BE USER PORT
 
-	cmd := exec.Command(prg, container) // add port flag + value
+	cmd := exec.Command(docker, run, p, args, container) // add port flag + value
 	stdout, err := cmd.Output()
 	if err != nil {
 		log.Fatal(err)
