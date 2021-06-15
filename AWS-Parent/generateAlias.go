@@ -8,15 +8,7 @@ import (
 	"time"
 )
 
-	
-func check(e error) {
-    if e != nil {
-        panic(e)
-    }
-}
-
-func main() {
-	adjectives := []string{
+var adjectives = []string{
 		"regular",
 		"diligent",
 		"flowery",
@@ -119,7 +111,7 @@ func main() {
 		"super",
 	}
 
-	nouns := []string{
+var nouns = []string{
 		"aunt",
 		"harmony",
 		"magic",
@@ -223,45 +215,38 @@ func main() {
 		"monkey",
 	}
 
+func generateAlias() {
+	
 	rand.Seed(time.Now().UnixNano())
 
-	newName := adjectives[rand.Intn(100)] + "-" + nouns[rand.Intn(100)]
+	newName := adjectives[rand.Intn(100)] + "_" + nouns[rand.Intn(100)]
 
 	if _, err := os.Stat("takenAliases.json"); err == nil {
-		var names []string
+		m := make(map[string]bool)
 		readBytes, _ := ioutil.ReadFile("takenAliases.json")
-		json.Unmarshal(readBytes, &names)
-
-		count := 0
-		found := 0
+		json.Unmarshal(readBytes, &m)
 
 		for true {
-			if found == count {
-				break;
-			}
-
-			if names[count] == newName {
-				newName = adjectives[rand.Intn(100)] + "-" + nouns[rand.Intn(100)]
-				found = count
-			}
-
-			count++
-
-			if found != 0 && count == len(names) {
-				count = 0
+			if m[newName] == true {
+				newName = adjectives[rand.Intn(100)] + "_" + nouns[rand.Intn(100)]
+				continue
 			} else {
-				break;
+				m[newName] = true
+				marshaledDict, _ := json.Marshal(m)
+				err := ioutil.WriteFile("takenAliases.json", marshaledDict, 0644)
+				if err != nil {
+					panic(err)
+				}
+				break
 			}
-    	}
-
-		names = append(names, newName)
-		marshaledDict, _ := json.Marshal(names)
-		err := ioutil.WriteFile("takenAliases.json", marshaledDict, 0644)
-    	check(err)
+    	}		
 	} else if os.IsNotExist(err) {
-		newAliasDict := []string{newName}
+		newAliasDict := make(map[string]bool)
+		newAliasDict[newName] = true
     	marshaledDict, _ := json.Marshal(newAliasDict)
 		err := ioutil.WriteFile("takenAliases.json", marshaledDict, 0644)
-    	check(err)
+    	if err != nil {
+			panic(err)
+		}
 	}
 }
