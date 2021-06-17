@@ -59,9 +59,7 @@ func up() {
 
 func main() {
 	client = createClient()
-	fmt.Println("Client running on port 8000")
 
 	http.HandleFunc("/start-service", startService)
 	http.ListenAndServe(":8080", nil)
-	fmt.Println("Server running on port 8080")
 }
