@@ -6,53 +6,67 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
 var m map[string]string
+var lines []string
+var nginxConf *os.File
 
-func init() {
+func initNginx() {
+	nginxConf = openNginxConf()
+	dump, _ := ioutil.ReadAll(nginxConf)
+	lines = strings.Split(string(dump), "\n")
+	m = deserializeNginx(nginxConf, lines)
+}
 
+func openNginxConf() *os.File {
 	f, err := os.OpenFile("nginx.conf", os.O_RDWR, 0644)
 
 	if err != nil {
 		log.Println(err)
 	}
-
-	dump, _ := ioutil.ReadAll(f)
-	lines := strings.Split(string(dump), "\n")
-
-	m = deserializeNginx(f, lines)
-	locations := serializeNginx()
-	newFile := strings.Join(append(lines[:54], locations...), "\n")
-	writeFile(f, newFile)
-
-	defer f.Close()
-
+	return f
 }
 
-func addProxy(alias string, port int) {
-	m[alias] = strconv.Itoa(port)
+func closeNginxConf() {
+	err := nginxConf.Close()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func addProxy(alias string, port string) {
+	m[alias] = port
+	locations := serializeNginx()
+	newFile := strings.Join(append(lines[:54], locations...), "\n")
+	writeFile(nginxConf, newFile)
 }
 
 func removeProxy(alias string) {
 	delete(m, alias)
+	locations := serializeNginx()
+	newFile := strings.Join(append(lines[:54], locations...), "\n")
+	writeFile(nginxConf, newFile)
 }
 
 func deserializeNginx(f *os.File, lines []string) map[string]string {
 
 	m = make(map[string]string)
 
-	aliasRegex, _ := regexp.Compile(`/[a-z]*/`)
+	aliasRegex, _ := regexp.Compile(`/[a-z]*_[a-z]*/`)
 	portRegex, _ := regexp.Compile(`\d\d\d\d`)
 
 	for i := 54; i < len(lines)-3; i += 4 {
 		alias := aliasRegex.FindString(lines[i])
-		alias = alias[1 : len(alias)-1]
+		if len(alias) > 0 {
+			alias = alias[1 : len(alias)-1]
+		} else {
+			fmt.Println("???", alias)
+		}
 		port := portRegex.FindString(lines[i+1])
 
-		fmt.Println(alias, port)
+		// fmt.Println(alias, port)
 
 		m[alias] = port
 	}
@@ -78,7 +92,6 @@ func serializeNginx() []string {
 }
 
 func writeFile(f *os.File, newFile string) {
-	fmt.Println(newFile)
 	f.Truncate(0)
 	f.Seek(0, 0)
 	fmt.Fprintf(f, "%s", newFile)

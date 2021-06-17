@@ -10,18 +10,22 @@ import (
 	"os/exec"
 )
 
-func startService(container string) {
+func startDockerService(container string, port string, innerPort string) string {
 	docker := "docker"
 	run := "run"
+	d := "-d"
 	p := "-p"
-	args := fmt.Sprintf("%d:%d", 3000, 3000) // FIRST NUMBER SHOULD BE portAssigner.checkPort() SECOND NUMBER SHOULD BE USER PORT
-
-	cmd := exec.Command(docker, run, p, args, container) // add port flag + value
+	args := fmt.Sprintf("%s:%s", port, innerPort) // FIRST NUMBER SHOULD BE portAssigner.checkPort() SECOND NUMBER SHOULD BE USER PORT
+	fmt.Println(fmt.Sprintf("%s %s %s %s %s %s", docker, run, d, p, args, container))
+	cmd := exec.Command(docker, run, d, p, args, container) // add port flag + value
 	stdout, err := cmd.Output()
+	containerId := string(stdout)
 	if err != nil {
+		fmt.Println("Docker?????")
 		log.Fatal(err)
 	}
 
-	fmt.Print(string(stdout))
+	fmt.Print(containerId)
+	return containerId[:len(containerId)-2]
 
 }
