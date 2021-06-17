@@ -3,58 +3,65 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"net/rpc"
 )
 
+type AWSServiceRequestBody struct {
+    ContainerTag 	string
+    Desc 			string
+    Src 			string
+    Account 		string
+	InnerPort 		string
+}
+
 type StartAWSServiceParams struct {
-	Alias string
-	req AWSServiceRequestBody
+	Alias 	string
+	Req 	AWSServiceRequestBody
 }
 
 var port int = 8000
 var ip string = "192.168.1.242"
+var client *rpc.Client
 
-func CreateClient() *rpc.Client {
+func createClient() *rpc.Client {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%v:%v", ip, port))
 	if err != nil {
 		log.Fatal("dialing:", err)
 	}
-
+	
 	fmt.Printf("Client connected on port %v\n", port)
 	return client
 }
 
-func main() {
-	client := CreateClient()
-
-	newAWSServiceRequestBody := AWSServiceRequestBody{
-		ContainerTag: "alfonso/test",
-		Desc: "This does something",
-		Src: "github.com/alfonso",
-		Account: "Alfonso",
-	}
-
-	newAWSService := StartAWSServiceParams{Alias: generateAlias(), req: newAWSServiceRequestBody}
+func startAWSService(body AWSServiceRequestBody) {
+	newAWSService := StartAWSServiceParams{Alias: generateAlias(), Req: body}
 
 	AWSRetString := ""
-	AWSServiceErr := client.Call("Child.StartAWSService", newAWSService, &AWSRetString)
+	AWSServiceErr := client.Call("Child.StartAWSService", &newAWSService, &AWSRetString)
 	if AWSServiceErr != nil {
 		log.Fatal(AWSServiceErr)
 	}
 
-	fmt.Println(AWSRetString)
-	
+	fmt.Printf("startAWSService response is %v\n", AWSRetString)
+}
+
+func up() {
 	upReqString := ""
 	upRetInt := 0
-	upErr := client.Call("Child.Up", upReqString, &upRetInt)
+	upErr := client.Call("Child.Up", &upReqString, &upRetInt)
 	if upErr != nil {
 		log.Fatal(upErr)
 	}
 
-	fmt.Println(upRetInt)
+	fmt.Printf("up response is %v\n", upRetInt)
+}
 
-	// http.HandleFunc("/", handler)
-	// http.HandleFunc("/start-service", startService)
-	// fmt.Println("Server running on port 8080")
-	// log.Fatal(http.ListenAndServe(":8080", nil))
+func main() {
+	client = createClient()
+	fmt.Println("Client running on port 8000")
+
+	http.HandleFunc("/start-service", startService)
+	http.ListenAndServe(":8080", nil)
+	fmt.Println("Server running on port 8080")
 }

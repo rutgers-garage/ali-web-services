@@ -226,7 +226,6 @@ func generateAlias() string {
 		for {
 			if newMap[newName] {
 				newName = newAlias()
-				continue
 			} else {
 				newMap[newName] = true
 				writeFile(newMap)
