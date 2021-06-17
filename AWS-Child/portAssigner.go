@@ -1,84 +1,20 @@
-// exec("docker run <name>") + docker stop + docker stat
-// edit /etc/nginx/nginx.conf
-// restart nginx
-
-/*
-key: port
-value: struct containing
-	alias,
-	container tag,
-	date added,
-	date modified,
-	Desc,
-	src,
-	Account associated
-*/
-
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os/exec"
 	"strconv"
 	"strings"
 )
 
-type AWSAppEntry struct {
-	Alias        string
-	ContainerTag string
-	DateAdded    string
-	DateModified string
-	Desc         string
-	Src          string
-	Account      string
-	Line         int
-}
-
-func addPort(alias string, tag string, added string, mod string, desc string, src string, acc string, line int) int {
-	// create struct
-	test := AWSAppEntry{
-		Alias:        alias,
-		ContainerTag: tag,
-		DateAdded:    added,
-		DateModified: mod,
-		Desc:         desc,
-		Src:          src,
-		Account:      acc,
-		Line:         line,
-	}
-
-	// read in json
-	m := make(map[string]AWSAppEntry)
-
-	// unmarshal
-
-	// create new port
-	port := checkPort()
-
-	// add new port and info
-	m[fmt.Sprint(port)] = test
-
-	// marshal
-	file, _ := json.MarshalIndent(m, "", "\t")
-
-	// overwrite file
-	_ = ioutil.WriteFile("ports.json", file, 0644)
-
-	return 0
-}
-
-func checkPort() int {
+func checkPort() string {
 	prg1 := "lsof"
 	arg1 := "-i"
 	arg2 := "-P"
 	arg3 := "-n"
 	prg2 := "grep"
 	arg4 := "LISTEN"
-	// declare variable for port flag
-	// declare variable for port fowarding
 
 	lsof := exec.Command(prg1, arg1, arg2, arg3) // add port flag + value
 
@@ -115,7 +51,7 @@ func checkPort() int {
 		//fmt.Println(tempPort)
 	}
 
-	retPort := -1
+	retPort := ""
 	flag := 0
 	// 2000 to 9000
 	for i := 2000; i <= 9000; i++ {
@@ -128,11 +64,11 @@ func checkPort() int {
 			}
 		}
 		if flag == 0 {
-			retPort = i
+			retPort = strconv.Itoa(i)
 			break
 		}
 	}
-	// fmt.Println(retPort)
+	fmt.Println(retPort)
 	return retPort
 }
 

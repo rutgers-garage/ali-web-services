@@ -1,11 +1,24 @@
 {
-	"3000": {
-		"Alias": "Aries",
-		"ContainerTag": "alimohamad/test",
-		"DateAdded": "05/15/1999",
-		"DateModified": "05/16/1999",
-		"Desc": "my birthday",
+	"2000": {
+		"Alias": "zonked_wire",
+		"ContainerTag": "alimohamad/aws-container-test",
+		"DateAdded": "2021-06-16 22:19:50.267694 -0400 EDT m=+241.657815804",
+		"DateModified": "2021-06-16 22:19:50.267707 -0400 EDT m=+241.657828604",
+		"Desc": "This does something",
 		"Src": "github.com/alfonso",
-		"Account": "Alfonso"
+		"Account": "Alfonso",
+		"InnerPort": "3000",
+		"ContainerId": "0205b5178aaf0c96703530611d4efc19db6ab858248ff810aefc7605beedb3e4"
+	},
+	"efficacious_dirt": {
+		"Alias": "efficacious_dirt",
+		"ContainerTag": "alimohamad/aws-container-test",
+		"DateAdded": "2021-06-16 22:26:40.714021 -0400 EDT m=+28.918521089",
+		"DateModified": "2021-06-16 22:26:40.714227 -0400 EDT m=+28.918726081",
+		"Desc": "This does something",
+		"Src": "github.com/alfonso",
+		"Account": "Alfonso",
+		"InnerPort": "3000",
+		"ContainerId": "35842c0c0c53918be6fbdb6211cfb6e1c7cf5b15b14f953badf8f5761cd13c9"
 	}
 }
